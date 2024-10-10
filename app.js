@@ -33,9 +33,12 @@ async function main() {
       console.log(typeof claveGenerada);
 
       condicionSalida = await abrirRar(claveGenerada)
-      console.log("valor condiciond e salida del while", condicionSalida);
-
+      if (condicionSalida) {
+        break
+      }
     }
+    console.log("vVALOR DE CNDICION DE WHILE TRU DEBERI SALIR", condicionSalida);
+
   } while (!condicionSalida);
 
 }
@@ -63,7 +66,7 @@ function createTextFile(filename, content, dir) {
 }
 
 // Ejemplo de uso
-const filename = 'clave.txt';         // Nombre del archivo
+const filename = 'clave12.txt';         // Nombre del archivo
 const dir = './';          // Directorio donde se guardará el archivo
 
 
@@ -79,8 +82,6 @@ async function abrirRar(passwordd) {
     // Leer el archivo RAR en un ArrayBuffer
     const buf = Uint8Array.from(fs.readFileSync("prueba.rar")).buffer;
 
-    // Especificar la contraseña
-    // const password = "So1"; // Cambia esto por la contraseña correcta
 
     // Crear el extractor a partir de los datos del archivo, pasando la contraseña
     const extractor = await unrar.createExtractorFromData({
@@ -108,29 +109,14 @@ async function abrirRar(passwordd) {
     // Extraer un archivo específico (por ejemplo, '1.txt')
     const extracted = await extractor.extract({ files: ["1.txt"] });
     console.log("ver que sale abajo esta el extracted");
-    //console.log(extracted);
 
     // Mostrar el encabezado del archivo extraído
     const extractedArcHeader = extracted.arcHeader;
 
     // Cargar los archivos extraídos
-    const files = [...extracted.files];
-
-    // Mostrar el contenido extraído del archivo
-    //console.log('Contenido extraído:', files[0].extraction);
-
-    // Guardar el archivo extraído en el sistema
-    const outputDir = "./extraidos";
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir);
-    }
+    //const files = [...extracted.files];
 
 
-
-    /*   // Guardar el archivo extraído en el sistema
-    const outputFilePath = `${outputDir}/1.txt`;
-    fs.writeFileSync(outputFilePath, files[0].extraction);
-    console.log(`Archivo extraído y guardado en: ${outputFilePath}`); */
     console.log(EstadoContrasenia);
 
 
@@ -141,9 +127,13 @@ async function abrirRar(passwordd) {
   }
   if (EstadoContrasenia) {
     // Llamar a la función para crear el archivo
-    createTextFile(filename, passwordd, dir);
+    console.log(`VAMOS A CREAR EL TXT PARA GUARDA LA CLAVE: ${passwordd}`);
+
+    let cotenidoGuardar = ` CLAVE ENCONTRADA :${passwordd}`;
+    createTextFile(filename, cotenidoGuardar, dir);
+
   }
-  console.log(EstadoContrasenia, ",al final de salida");
+  console.log(EstadoContrasenia, ",VALOR DE FUNCION  ABRIR RAR");
   return EstadoContrasenia
 }
 
