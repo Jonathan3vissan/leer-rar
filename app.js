@@ -1,20 +1,98 @@
-const fs = require("fs");
 const unrar = require("node-unrar-js");
+const fs = require("fs");
+
+// Generador de claves
+function* bruteForceKeyGenerator(characters, maxLength) {
+  function* generate(currentKey, currentLength) {
+    if (currentLength === 0) {
+      yield currentKey;
+      return;
+    }
+
+    for (let i = 0; i < characters.length; i++) {
+      yield* generate(currentKey + characters[i], currentLength - 1);
+    }
+  }
+
+  for (let length = 1; length <= maxLength; length++) {
+    yield* generate('', length);
+  }
+}
+
+// Función principal
+async function main() {
+  const characters = 'Sa1'; // Caracteres permitidos para generar claves
+  const maxLength = 3;         // Longitud máxima de las claves
+  const keyGenerator = bruteForceKeyGenerator(characters, maxLength);
+  let claveGenerada = "def"
+  let condicionSalida = true;
+  do {
+    for (const key of keyGenerator) {
+      console.log(`Probando clave: ${key}`); // Mostrar la clave que se está probando
+      claveGenerada = key
+      console.log(typeof claveGenerada);
+
+      condicionSalida = await abrirRar(claveGenerada)
+      console.log("valor condiciond e salida del while", condicionSalida);
+
+    }
+  } while (!condicionSalida);
+
+}
+
+main();
+
+
+
+//const fs = require('fs');
+const path = require('path');
+
+// Función para crear y guardar un archivo de texto
+function createTextFile(filename, content, dir) {
+  // Crear la ruta completa del archivo
+  const filePath = path.join(__dirname, dir, filename);
+
+  // Escribir el contenido en el archivo
+  fs.writeFile(filePath, content, (err) => {
+    if (err) {
+      console.error('Error al crear el archivo:', err);
+      return;
+    }
+    console.log(`Archivo creado exitosamente en: ${filePath}`);
+  });
+}
+
+// Ejemplo de uso
+const filename = 'clave.txt';         // Nombre del archivo
+const dir = './';          // Directorio donde se guardará el archivo
+
+
+
+
+
+
 // debe ser mi pricnical debe ser el geneardor de claves y debe devolver eeste avlor en la linea 15 como argumentoe del await
-async function abrirRar(password) {
+async function abrirRar(passwordd) {
+  let EstadoContrasenia = false;
+  let pudoAbrir = "def"
   try {
     // Leer el archivo RAR en un ArrayBuffer
-    const buf = Uint8Array.from(fs.readFileSync("prueba2.rar")).buffer;
-    
+    const buf = Uint8Array.from(fs.readFileSync("prueba.rar")).buffer;
+
     // Especificar la contraseña
     // const password = "So1"; // Cambia esto por la contraseña correcta
-    
+
     // Crear el extractor a partir de los datos del archivo, pasando la contraseña
     const extractor = await unrar.createExtractorFromData({
       data: buf,
-      password: password
+      password: passwordd
     });
 
+    console.log("tipo de dato de calve recivido de paswordd", typeof passwordd);
+    console.log("valor de la pasword generado en generador de clave:", passwordd);
+
+    EstadoContrasenia = true;
+    pudoAbrir = `ACA esta el rar abierto y esta seria al contraseña ${passwordd}`;
     // Obtener la lista de archivos dentro del archivo RAR
     const list = extractor.getFileList();
 
@@ -29,7 +107,8 @@ async function abrirRar(password) {
 
     // Extraer un archivo específico (por ejemplo, '1.txt')
     const extracted = await extractor.extract({ files: ["1.txt"] });
-    console.log(extracted);
+    console.log("ver que sale abajo esta el extracted");
+    //console.log(extracted);
 
     // Mostrar el encabezado del archivo extraído
     const extractedArcHeader = extracted.arcHeader;
@@ -38,22 +117,34 @@ async function abrirRar(password) {
     const files = [...extracted.files];
 
     // Mostrar el contenido extraído del archivo
-    console.log('Contenido extraído:', files[0].extraction);
+    //console.log('Contenido extraído:', files[0].extraction);
 
     // Guardar el archivo extraído en el sistema
     const outputDir = "./extraidos";
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir);
     }
-    
-    // Guardar el archivo extraído en el sistema
+
+
+
+    /*   // Guardar el archivo extraído en el sistema
     const outputFilePath = `${outputDir}/1.txt`;
     fs.writeFileSync(outputFilePath, files[0].extraction);
-    console.log(`Archivo extraído y guardado en: ${outputFilePath}`);
+    console.log(`Archivo extraído y guardado en: ${outputFilePath}`); */
+    console.log(EstadoContrasenia);
+
 
   } catch (error) {
-    console.error("Error durante la extracción:", error);
+    console.error("Error, no se puedo abrir rar:", error);
+    EstadoContrasenia = false
+
   }
+  if (EstadoContrasenia) {
+    // Llamar a la función para crear el archivo
+    createTextFile(filename, passwordd, dir);
+  }
+  console.log(EstadoContrasenia, ",al final de salida");
+  return EstadoContrasenia
 }
 
-abrirRar(); //esta deber sde rllamado por el genedarod no como princippal y este deber se llamado por generdaro 
+main(); //esta deber sde rllamado por el genedarod no como princippal y este deber se llamado por generdaro 
