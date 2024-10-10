@@ -1,13 +1,13 @@
 const fs = require("fs");
 const unrar = require("node-unrar-js");
-
-async function main() {
+// debe ser mi pricnical debe ser el geneardor de claves y debe devolver eeste avlor en la linea 15 como argumentoe del await
+async function abrirRar(password) {
   try {
     // Leer el archivo RAR en un ArrayBuffer
     const buf = Uint8Array.from(fs.readFileSync("prueba2.rar")).buffer;
     
     // Especificar la contraseña
-    const password = "So1"; // Cambia esto por la contraseña correcta
+    // const password = "So1"; // Cambia esto por la contraseña correcta
     
     // Crear el extractor a partir de los datos del archivo, pasando la contraseña
     const extractor = await unrar.createExtractorFromData({
@@ -56,4 +56,4 @@ async function main() {
   }
 }
 
-main();
+abrirRar(); //esta deber sde rllamado por el genedarod no como princippal y este deber se llamado por generdaro 
