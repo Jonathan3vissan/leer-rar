@@ -4,10 +4,16 @@ const unrar = require("node-unrar-js");
 async function main() {
   try {
     // Leer el archivo RAR en un ArrayBuffer
-    const buf = Uint8Array.from(fs.readFileSync("test.rar")).buffer;
+    const buf = Uint8Array.from(fs.readFileSync("prueba2.rar")).buffer;
     
-    // Crear el extractor a partir de los datos del archivo
-    const extractor = await unrar.createExtractorFromData({ data: buf });
+    // Especificar la contraseña
+    const password = "So1"; // Cambia esto por la contraseña correcta
+    
+    // Crear el extractor a partir de los datos del archivo, pasando la contraseña
+    const extractor = await unrar.createExtractorFromData({
+      data: buf,
+      password: password
+    });
 
     // Obtener la lista de archivos dentro del archivo RAR
     const list = extractor.getFileList();
@@ -23,6 +29,7 @@ async function main() {
 
     // Extraer un archivo específico (por ejemplo, '1.txt')
     const extracted = await extractor.extract({ files: ["1.txt"] });
+    console.log(extracted);
 
     // Mostrar el encabezado del archivo extraído
     const extractedArcHeader = extracted.arcHeader;
