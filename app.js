@@ -8,12 +8,10 @@ function* bruteForceKeyGenerator(characters, maxLength) {
       yield currentKey;
       return;
     }
-
     for (let i = 0; i < characters.length; i++) {
       yield* generate(currentKey + characters[i], currentLength - 1);
     }
   }
-
   for (let length = 1; length <= maxLength; length++) {
     yield* generate('', length);
   }
@@ -31,20 +29,14 @@ async function main() {
       console.log(`Probando clave: ${key}`); // Mostrar la clave que se está probando
       claveGenerada = key
       console.log(typeof claveGenerada);
-
       condicionSalida = await abrirRar(claveGenerada)
       if (condicionSalida) {
         break
       }
     }
-    console.log("vVALOR DE CNDICION DE WHILE TRU DEBERI SALIR", condicionSalida);
-
   } while (!condicionSalida);
-
 }
-
 main();
-
 
 
 //const fs = require('fs');
@@ -64,8 +56,6 @@ function createTextFile(filename, content, dir) {
     console.log(`Archivo creado exitosamente en: ${filePath}`);
   });
 }
-
-// Ejemplo de uso
 const filename = 'clave12.txt';         // Nombre del archivo
 const dir = './';          // Directorio donde se guardará el archivo
 
@@ -73,8 +63,11 @@ const dir = './';          // Directorio donde se guardará el archivo
 
 
 
-
-// debe ser mi pricnical debe ser el geneardor de claves y debe devolver eeste avlor en la linea 15 como argumentoe del await
+/**
+ * verfica si caontrasenia enviada puede leer el rar y no si no puede abrir el rar
+ * @param {string} passwordd para verificar contrasenia correcta 
+ * @returns true si puede leer el rar
+ */
 async function abrirRar(passwordd) {
   let EstadoContrasenia = false;
   let pudoAbrir = "def"
@@ -82,15 +75,11 @@ async function abrirRar(passwordd) {
     // Leer el archivo RAR en un ArrayBuffer
     const buf = Uint8Array.from(fs.readFileSync("prueba.rar")).buffer;
 
-
     // Crear el extractor a partir de los datos del archivo, pasando la contraseña
     const extractor = await unrar.createExtractorFromData({
       data: buf,
       password: passwordd
     });
-
-    console.log("tipo de dato de calve recivido de paswordd", typeof passwordd);
-    console.log("valor de la pasword generado en generador de clave:", passwordd);
 
     EstadoContrasenia = true;
     pudoAbrir = `ACA esta el rar abierto y esta seria al contraseña ${passwordd}`;
@@ -108,7 +97,6 @@ async function abrirRar(passwordd) {
 
     // Extraer un archivo específico (por ejemplo, '1.txt')
     const extracted = await extractor.extract({ files: ["1.txt"] });
-    console.log("ver que sale abajo esta el extracted");
 
     // Mostrar el encabezado del archivo extraído
     const extractedArcHeader = extracted.arcHeader;
@@ -116,25 +104,17 @@ async function abrirRar(passwordd) {
     // Cargar los archivos extraídos
     //const files = [...extracted.files];
 
-
-    console.log(EstadoContrasenia);
-
-
   } catch (error) {
     console.error("Error, no se puedo abrir rar:", error);
     EstadoContrasenia = false
-
   }
   if (EstadoContrasenia) {
     // Llamar a la función para crear el archivo
     console.log(`VAMOS A CREAR EL TXT PARA GUARDA LA CLAVE: ${passwordd}`);
-
     let cotenidoGuardar = ` CLAVE ENCONTRADA :${passwordd}`;
     createTextFile(filename, cotenidoGuardar, dir);
-
   }
-  console.log(EstadoContrasenia, ",VALOR DE FUNCION  ABRIR RAR");
   return EstadoContrasenia
 }
 
-main(); //esta deber sde rllamado por el genedarod no como princippal y este deber se llamado por generdaro 
+main(); 
